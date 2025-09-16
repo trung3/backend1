@@ -1,5 +1,10 @@
+require("dotenv").config();
+
 module.exports = {
   app: {
-    port: process.env.PORT || 3000, // cổng mặc định 3000
+    port: process.env.PORT || 3000,
+  },
+  db: {
+    uri: process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/contactbook",
   },
 };
