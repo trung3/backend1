@@ -1,16 +1,27 @@
-// app/utils/mongodb.util.js
 const { MongoClient } = require("mongodb");
 
-class MongoDB {
-  static client;
+const uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017";
+const dbName = process.env.DB_NAME || "contactbook";
 
-  static async connect(uri) {
-    if (this.client) return this.client;
-    this.client = await MongoClient.connect(uri, { 
-      // useUnifiedTopology/useNewUrlParser không cần ở driver mới
-    });
-    return this.client;
+// 👉 Singleton client + promise để tránh connect trùng
+const client = new MongoClient(uri, {});
+let clientPromise = null;
+
+async function getClient() {
+  if (!clientPromise) clientPromise = client.connect();
+  return clientPromise; // đã connect thì trả về ngay
+}
+
+function getDb() {
+  // chỉ gọi sau khi getClient() đã await
+  return client.db(dbName);
+}
+
+// Đóng kết nối CHỈ khi app thoát
+async function closeClient() {
+  if (client && client.topology && !client.topology.isClosed()) {
+    await client.close();
   }
 }
 
-module.exports = MongoDB;
+module.exports = { getClient, getDb, closeClient, dbName };

@@ -1,23 +1,27 @@
-// server.js
-const app = require("./app");
-const config = require("./app/config");
-const MongoDB = require("./app/utils/mongodb.util");
+require("dotenv").config();
+const express = require("express");
+const cors = require("cors");
+const ApiError = require("./app/api-error");
+const contactsRouter = require("./app/routes/contact.route");
 
-async function startServer() {
-  try {
-       console.log("DB URI:", config.db.uri);
-    await MongoDB.connect(config.db.uri);
-    console.log("Connected to the database!");
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-    const port = config.app.port; // dùng cùng 1 tên biến
-    app.listen(port, () => {
+// routes
+app.use("/api/contacts", contactsRouter);
 
-      console.log(`Server is running on port ${port}`);
-    });
-  } catch (error) {
-    console.error("Cannot connect to the database!", error);
-    process.exit(1);
-  }
-}
+// 404
+app.use((req, res, next) => {
+  return next(new ApiError(404, "Resource not found"));
+});
 
-startServer();
+// error handler
+app.use((err, req, res, next) => {
+  return res.status(err.statusCode || 500).json({
+    message: err.message || "Internal Server Error",
+  });
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
