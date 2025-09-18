@@ -11,6 +11,9 @@ router.route("/")
 
 router.get("/:id", contacts.findOne); 
 router.put("/:id", contacts.update);
+router.delete("/:id", contacts.delete);   // DELETE /api/contacts/:id
+router.get("/favorites/all", contacts.findAllFavorite);
+router.delete("/", contacts.deleteAll);   // DELETE /api/contacts
 
   
   

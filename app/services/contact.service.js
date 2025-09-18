@@ -62,29 +62,27 @@ async update(id, payload) {
 
   // Trả về cả metadata để biết có update hay không
   return result;
+
+}
+async delete(id) {
+  const result = await this.collection.findOneAndDelete({
+    _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
+  });
+  return result;
 }
 
-  
-  
-  
-  
+async findFavorite() {
+  return await this.find({ favorite: true });
+}
 
-  
-  
-  
-  
+async deleteAll() {
+  const result = await this.collection.deleteMany({});
+  return result.deletedCount;   // số documents bị xoá
+}
 
-  
-  
-  
-  
-  
 
-  
 
-  
 
- 
 }
 
 
