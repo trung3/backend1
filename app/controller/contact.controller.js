@@ -32,14 +32,15 @@ exports.findAll = async (req, res, next) => {
   }
 };
 //tìm 1kq
+// findOne
 exports.findOne = async (req, res, next) => {
   try {
     await getClient();
     const contactService = new ContactService(getDb());
 
-    const id = req.query.id;   // 👈 lấy từ query string ?id=
+    const id = req.params.id;   // 👈 lấy từ param
     if (!id) {
-      return next(new ApiError(400, "id query param is required"));
+      return next(new ApiError(400, "id param is required"));
     }
 
     const document = await contactService.findById(id);
@@ -49,12 +50,11 @@ exports.findOne = async (req, res, next) => {
 
     return res.send(document);
   } catch (error) {
-    return next(
-      new ApiError(500, `Error retrieving contact with id=${req.query.id}`)
-    );
+    return next(new ApiError(500, `Error retrieving contact with id=${req.params.id}`));
   }
 };
-//update
+
+// update
 exports.update = async (req, res, next) => {
   if (Object.keys(req.body).length === 0) {
     return next(new ApiError(400, "Data to update can not be empty"));
@@ -62,27 +62,75 @@ exports.update = async (req, res, next) => {
 
   try {
     await getClient();
-    const contactService = new ContactService(getDb()); // 👈 dùng đúng tên class
-    const id = req.query.id;   // 👈 lấy từ query string ?id=
+    const contactService = new ContactService(getDb());
+    const id = req.params.id;   // 👈 lấy từ param
 
     if (!id) {
-      return next(new ApiError(400, "id query param is required"));
+      return next(new ApiError(400, "id param is required"));
     }
 
     const document = await contactService.update(id, req.body);
 
     if (!document) {
+      return next(new ApiError(404, "Contact not found"));
+    }
+if (!document.value) {
+      // Document tồn tại nhưng không thay đổi gì
       return res.send({
-        message: "Contact exists but no changes applied (fields may be identical)",
+        message: "Contact exists but no changes applied (fields may be identical)"
       });
     }
-
     return res.send({
       message: "Contact was updated successfully",
       contact: document,
     });
   } catch (error) {
     console.error("UPDATE ERROR:", error);
-    return next(new ApiError(500, `Error updating contact with id=${req.query.id}`));
+    return next(new ApiError(500, `Error updating contact with id=${req.params.id}`));
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

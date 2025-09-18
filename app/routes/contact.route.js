@@ -9,8 +9,8 @@ router.route("/")
   .get(contacts.findAll)   // GET /api/contacts
   .post(contacts.create);  // POST /api/contacts
 
-router.get("/find", contacts.findOne); 
-router.put("/update", contacts.update);
+router.get("/:id", contacts.findOne); 
+router.put("/:id", contacts.update);
 
   
   

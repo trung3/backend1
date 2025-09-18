@@ -44,27 +44,46 @@ class ContactService {
     return contact;
   }
 
-
-   async update(id, payload) {
+async update(id, payload) {
   const filter = {
     _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
   };
 
   const update = this.extractContactData(payload);
   if (Object.keys(update).length === 0) {
-    return null;
+    return null; // không có gì để update
   }
 
   const result = await this.collection.findOneAndUpdate(
     filter,
     { $set: update },
-    { returnDocument: "after" }   // đúng với v6
+    { returnDocument: "after" }  // MongoDB v6 option
   );
 
-  console.log("Update result:", result);
-
-  return result?.value;  // có thể là null nếu không có thay đổi
+  // Trả về cả metadata để biết có update hay không
+  return result;
 }
+
+  
+  
+  
+  
+
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+  
+
+  
+
  
 }
 
